@@ -1,12 +1,11 @@
 class StudentsController < ApplicationController
 
-  before_action :set_admin
+  before_action :set_admin, except: [ :show, :edit, :update, :destroy ]  
+  # before_action :authenticate_request, except: [ :show ]
+  before_action :set_student, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    render json: { students: @admin.enrolled_students, status: :ok }
-  end
-
-  def new
+    render json: { students: @admin.enrolled_students.order(:id), status: :ok }
   end
 
   def create
@@ -19,15 +18,23 @@ class StudentsController < ApplicationController
   end
 
   def show
+    render json: { student: @student, status: :found }
   end
 
   def edit
+    render json: { student: @student, status: :found }
   end
 
   def update
+    if @student.update(student_params)
+      render json: { status: :ok }
+    end
   end
 
   def destroy
+    if @student.destroy
+      render json: { status: :ok }
+    end
   end
 
   private
@@ -39,5 +46,9 @@ class StudentsController < ApplicationController
 
   def student_params
     params.permit(:first_name, :last_name, :phone, :email, :admin_id)
+  end
+
+  def set_student
+    @student = Student.find(params[:id])
   end
 end

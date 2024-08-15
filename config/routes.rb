@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  resources :students
+
+  resources :students do
+    get :edit, on: :member
+  end
 
   resources :registrations, only: [:create]
 
